@@ -1,0 +1,45 @@
+#+TITLE: Dev config
+#+DATE: 2023-02-06T20:20:00+01:00
+#+DRAFT: false
+#+PROPERTY: header-args:emacs-lisp :comments link :results none
+#+TAGS[]: emacs config
+#+ALIASES[]: /emacs-config/01-main/40-dev.html
+
+* jira-jump
+This is my personal (and first ever) emacs pacakge that I use to for
+quickly jumping to Jira boards and issues.
+
+#+begin_src emacs-lisp
+  (use-package jira-jump
+    :ensure
+    :straight (jira-jump :repo "https://github.com/faijdherbe/jira-jump.el")
+    :bind (("C-c j j" . jira-jump-open-in-browser)
+	   ("C-c j w" . jira-jump-send-to-kill-ring)
+	   ("C-c j l" . jira-jump-insert-org-mode-link))
+    :config
+    (setq jira-jump--projects
+	  '(("Client A" . ((instance . "https://client_a.atlassian.net")
+			   (projects . ("FOO" "BAR"))))
+	    ("Client B" . ((instance . "https://client_b.atlassian.net")
+			   (projects . ("GARDN" "LIVINGRM" "KITCHN"))))
+	    ("Internal" . ((instance . "https://my-company.atlassian.net")
+			   (projects . ("DEVIMPR" "ONBOARDNG" "SUPPRT")))))))
+#+end_src
+
+* TODO Eglot
+
+I would really like to get into eglot.
+
+#+begin_src emacs-lisp
+(use-package eglot
+  :ensure)
+#+end_src
+
+This piece should move to =php.org= though...
+
+#+begin_src emacs-lisp
+
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '(php-mode . ("intelephense" "--stdio"))))
+#+end_src

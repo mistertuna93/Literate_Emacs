@@ -1,0 +1,91 @@
+#+TITLE: Theme Configuration
+#+DATE: 2023-01-23T12:07:09+01:00
+#+DRAFT: false
+#+PROPERTY: header-args:emacs-lisp :comments link :results none
+#+TAGS[]: emacs config theme modus
+#+ALIASES[]: /emacs-config/01-main/20-theme.html
+
+* Basic UI setup
+
+There are a few elements I'd like to fix about the default Emacs UI
+configuration, as I like it to be as minimal as possible.
+
+First off, lets disable as many elements that are commonly used with a
+mouse as possible.
+
+#+begin_src emacs-lisp
+  (menu-bar-mode 0)
+  (tool-bar-mode 0)
+  (when (eq window-system 'x)
+    (scroll-bar-mode 0))
+#+end_src
+
+* Theming :noexport:
+** Todo               
+  - [X] modus themes
+    - default vivendi-tinted, might need some reviewing if its the
+      best choice as i dont like the blue BG, i'd rather have it
+      completely black.  
+    - bind key to quick-toggle between light/dark?
+  - [ ] doom modeline
+  - [ ] ligatures
+  - [ ] all the icons? 
+  - [ ] emoji support?
+  - [ ] hl-line?
+
+* Modus
+I really like the [[https://git.sr.ht/~protesilaos/modus-themes][Modus themes]].  It's easy to configure, has a
+consistent style and comes in both light and dark modes.
+
+To start off, i'm going to define two variables, which both fallback
+on the regular themes whenever we're not running in an x-window
+system.
+#+begin_src emacs-lisp
+  (setq my--dark-theme (if (eq window-system 'x)
+		       'modus-vivendi-tinted
+		     'modus-vivendi))
+  (setq my--light-theme (if (eq window-system 'x)
+		       'modus-operandi-tinted
+		     'modus-operandi))
+#+end_src
+
+Next up, loading the =modus-themes= package, and set it up to my
+personal preference.  I'll load both light and dark themes and
+activate the darm-theme by default.  Preloading the light theme will
+allow us to swtich faster.
+#+begin_src emacs-lisp
+  (use-package modus-themes
+    :ensure t
+    :bind (("M-<XF86MonBrightnessUp>" . #'modus-themes-toggle)
+	   ("M-<XF86MonBrightnessDown>" . #'modus-themes-toggle))
+    :init
+    ; some preload configuration
+    (setq 
+	 modus-themes-region '(bg-only no-extend)
+	 modus-themes-mode-line '(accented borderless 4 0.9)
+	 modus-themes-syntax '(alt-syntax yellow-comments)
+	 modus-themes-paren-match '(bold intense)
+	 modus-themes-hl-line '(intense accented)
+
+	 modus-themes-completions '((matches . (extrabold accented intense))
+				    (selection . (semibold accented))
+				    (popup . (accented intense)))
+	 modus-themes-org-blocks 'tinted-background
+	 modus-themes-common-palette-overrides '((border-mode-line-active unspecified)
+						 (border-mode-line-inactive unspecified)
+						 (fringe unspecified)
+						 )
+	 modus-themes-to-toggle (list my--dark-theme my--light-theme)
+	 )
+
+    :config
+    ; preloading both videndi and operandi themes
+    (load-theme my--dark-theme t t)
+    (load-theme my--light-theme t t)
+
+    ; enable vivendi by default, as I'll only use operandi when I'm
+    ; working in direct sunlight (or while still developing this config)
+    (enable-theme my--light-theme))
+#+end_src
+
+

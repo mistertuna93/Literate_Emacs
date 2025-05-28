@@ -1,0 +1,59 @@
+#+TITLE: Navigation
+#+DATE: 2023-02-06T20:29:00+01:00
+#+DRAFT: false
+#+PROPERTY: header-args:emacs-lisp :comments link :results none
+#+TAGS[]: emacs config
+#+ALIASES[]: /emacs-config/01-main/30-navigation.html
+
+* ivy/counsel/swiper
+#+begin_src emacs-lisp
+  (use-package ivy
+    :ensure
+    :bind (("C-s" . 'swiper))
+    :config
+    (ivy-mode)
+    (counsel-mode)
+    (setq ivy-use-selectable-prompt t))
+#+end_src
+
+* treemacs
+#+begin_src emacs-lisp
+  (use-package treemacs
+    :ensure 
+    :defer t
+    :init
+    (with-eval-after-load 'winum
+      (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+    :config
+    (setq treemacs-no-png-images nil
+	  treemacs-workspace-switch-cleanup nil)
+
+    (custom-set-faces
+     '(treemacs-root-face ((t (:inherit font-lock-constant-face :underline t :weight bold :height 1.2))))
+     '(treemacs-directory-face ((t (:height 0.9))))
+     '(treemacs-directory-collapsed-face ((t (:height 0.9))))
+     '(treemacs-git-added-face ((t (:height 0.9))))
+     '(treemacs-git-modified-face ((t (:height 0.9))))
+     '(treemacs-file-face ((t (:height 0.9))))
+     '(treemacs-git-unmodified-face ((t (:height 0.9))))
+     '(treemacs-git-ignored-face ((t (:height 0.8))))
+     '(treemacs-git-untracked-face ((t (:height 0.9))))
+     )
+    '(treemacs-collapse-dirs 3)
+    '(treemacs-filewatch-mode t)
+    '(treemacs-follow-mode nil)
+    '(treemacs-fringe-indicator-mode t)
+    '(treemacs-indentation 1)
+    '(treemacs-resize-icons 16)
+    ;;'(treemacs-width-is-initially-locked t)
+    :bind
+    (:map global-map
+	  ("M-0"       . treemacs-select-window)
+	  ("C-x t 1"   . treemacs-delete-other-windows)
+	  ("C-x t w"   . treemacs-switch-workspace)
+	  ("C-x t t"   . treemacs)
+	  ("C-x t d"   . treemacs-select-directory)
+	  ("C-x t B"   . treemacs-bookmark)
+	  ("C-x t C-t" . treemacs-find-file)
+	  ("C-x t M-t" . treemacs-find-tag)))
+#+end_src

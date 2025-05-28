@@ -1,0 +1,49 @@
+#+TITLE: EXWM Config
+#+DATE: 2023-01-22T10:02:31+01:00
+#+DRAFT: true
+#+TAGS[]: emacs config exwm
+#+PROPERTY: header-args:emacs-lisp :comments link
+
+* EXWM
+
+#+NAME: can-enable-exwm
+#+begin_src emacs-lisp
+(when (get-buffer "*window-manager*")
+  (kill-buffer "*window-manager*"))
+(when (get-buffer "*window-manager-error*")
+  (kill-buffer "*window-manager-error*"))
+(when (executable-find "wmctrl")
+  (shell-command "wmctrl -m ; echo $?" "*window-manager*" "*window-manager-error*"))
+
+(and (get-buffer "*window-manager-error*")
+         (eq window-system 'x))
+#+end_src
+
+
+  #+begin_src emacs-lisp 
+(use-package exwm
+   :ensure)
+(use-package exwm-randr
+   :ensure)
+(use-package 'exwm-systemtray
+   :ensure)
+
+
+(require 'exwm)
+(require 'exwm-randr)
+(require 'exwm-systemtray)
+(require 'exwm-config)
+#+end_src
+
+#+begin_src emacs-lisp
+(exwm-randr-enable)
+(exwm-systemtray-enable)
+(exwm-config-ido)
+#+end_src
+
+
+And finally, enable EXWM
+#+begin_src emacs-lisp
+(exwm-enable)
+  #+end_src
+

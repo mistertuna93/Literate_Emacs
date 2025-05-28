@@ -1,0 +1,85 @@
+#+TITLE: Main Config
+#+DATE: 2023-01-22T10:02:31+01:00
+#+DRAFT: false
+#+TAGS[]: emacs config
+#+PROPERTY: header-args:emacs-lisp :comments link :results none 
+
+* Main config
+This is the main entry point for my literate configuration.  I've
+decided to split my configurations into seperate ~.org~ files to keep
+related stuff together.  You can find this configuration at [[https://github.com/faijdherbe/emacs-config][GitHub]],
+and on [[https://www.faijdherbe.net][www.faijdherbe.net]].
+
+To use this configuration add the following codeblock to your
+=~/.emacs.d/init.el=, changing the path to this configuration file
+accordingly.
+
+#+begin_src emacs-lisp :tangle init.el
+;; load main literate configuration file
+;(setq user-init-file (or load-file-name (buffer-file-name)))
+;(setq user-emacs-directory (concat (file-name-directory user-init-file) "../.emacs.d"))
+
+(package-initialize)
+
+(setq faijdherbe-config--config-path
+      "~/Documents/emacs-config/literate")
+
+(org-babel-load-file
+ (expand-file-name (concat (string-trim mistertuna-config--config-path "/")
+                           "/01-main.org")))
+#+end_src
+
+Alternatively, you can press =C-c C-c= on this codeblock to
+evaluate immediately.
+
+* Desktop file for testing
+During debugging i'd like to use a desktop file for quick launching Emacs with our own configuration.  Let's call our app =Mymacs=.
+
+The path from the configuration earlier is injected upon tangling this file (=C-c C-v t=).
+
+  #+begin_src conf-desktop :tangle ~/.local/share/applications/mymacs.desktop 
+[Desktop Entry]
+Name=Mymacs
+Type=Application
+Comment=Emacs with my WIP Configuration
+Exec=/usr/bin/emacs -Q --eval "(setq jf/dev-env t)" -l "~/Documents/emacs-config/literate/init.el"
+Icon=/opt/giteye/icon.xpm
+Name[en_US]=Mymacs
+  #+end_src
+/note: It looks like GitHub and Hugo don't support =conf-desktop=, hence the lack of syntax highlighting. I'll need to look into this some other time./
+
+* Specific Configurations
+Below we find all our configuration files.  I should be able to merge
+the first two columns as it's pretty much redundant info, but let's
+postpone this for now. 
+  
+#+TBLNAME: orgmode-files
+| config     | filename          | enabled | description                                                                            |
+|------------+-------------------+---------+----------------------------------------------------------------------------------------|
+| [[file:02-package.org][package]]    | 02-package.org    | yes     | setup package repository and package manager.                                          |
+| exwm       | 03-exwm.org       | no      | setup emacs as window-manager                                                          |
+| [[file:20-theme.org][theme]]      | 20-theme.org      | yes     | theme and ui config                                                                    |
+| [[file:30-navigation.org][navigation]] | 30-navigation.org | yes     | navigation and autocomplete                                                           |
+| [[file:40-dev.org][dev]]        | 40-dev.org        | yes     | generic development                                                                    |
+| php        |                   | no      | as this is my main language, it deserves its own config file                           |
+| org-mode   |                   | no      | org-roam and org-agenda configuration                                                  |
+| config     | 99-config.org     | yes     | Local config that can set some specific settings                                       |
+|            |                   |         |                                                                                        |
+
+The following script will use the table above as source to load all
+other configurations in order - if enabled.
+
+#+NAME: load-configs
+#+begin_src emacs-lisp :var files=orgmode-files
+(dolist (record files)
+  (let* ((filename (cadr record))
+         (enabled (caddr record))
+         (dir (or mistertuna-config--config-path ""))
+         (path (expand-file-name (concat (string-trim dir "/")
+                                         "/" filename))))
+    (if (and (string= "yes" enabled)
+             (file-readable-p path))
+        (progn 
+          (message "load: %s" filename)
+          (org-babel-load-file path)))))
+#+end_src
