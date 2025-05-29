@@ -1,0 +1,117 @@
+#+TITLE: Navigation
+#+DATE: 2023-02-06T20:29:00+01:00
+#+DRAFT: false
+#+PROPERTY: header-args:emacs-lisp :comments link :results none
+#+TAGS[]: emacs config
+#+ALIASES[]: /emacs-config/01-main/30-navigation.html
+
+* Completion Framework (Vertico + Marginalia + Orderless + Embark + Consult)
+#+begin_src emacs-lisp
+  ;; Vertico: Vertical completion UI
+  (use-package vertico
+    :init
+    (vertico-mode))
+
+  ;; Save history and persist completion state
+  (use-package savehist
+    :init
+    (savehist-mode))
+
+  ;; Marginalia: Rich annotations in minibuffer
+  (use-package marginalia
+    :after vertico
+    :init
+    (marginalia-mode))
+
+  ;; Orderless: Flexible matching style
+  (use-package orderless
+    :init
+    (setq completion-styles '(orderless basic)
+          completion-category-defaults nil
+          completion-category-overrides '((file (styles partial-completion)))))
+
+  ;; Embark: Contextual actions for minibuffer selections
+  (use-package embark
+    :bind
+    (("C-." . embark-act)
+     ("C-;" . embark-dwim))
+    :init
+    (setq prefix-help-command #'embark-prefix-help-command))
+
+  ;; Consult: Various enhanced commands for completion
+  (use-package consult
+    :bind (("C-s" . consult-line)
+           ("M-y" . consult-yank-pop)
+           ("C-x b" . consult-buffer)
+           ("C-x C-r" . consult-recent-file)))
+#+end_src
+
+* Treemacs File Explorer
+#+begin_src emacs-lisp
+  (use-package treemacs
+    :defer t
+    :init
+    (with-eval-after-load 'winum
+      (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+    :config
+    (setq treemacs-no-png-images nil
+          treemacs-workspace-switch-cleanup nil)
+    (treemacs-follow-mode t)
+    (treemacs-filewatch-mode t)
+    (treemacs-fringe-indicator-mode t)
+    (treemacs-indentation 1)
+    (treemacs-resize-icons 16)
+    (treemacs-collapse-dirs 3)
+    :bind
+    (:map global-map
+          ("M-0"       . treemacs-select-window)
+          ("C-x t 1"   . treemacs-delete-other-windows)
+          ("C-x t t"   . treemacs)
+          ("C-x t d"   . treemacs-select-directory)))
+#+end_src
+
+* Evil Mode and Evil Collection
+#+begin_src emacs-lisp
+  (use-package evil
+    :init
+    (setq evil-want-integration t)
+    (setq evil-want-keybinding nil)
+    :config
+    (evil-mode 1))
+
+  (use-package evil-collection
+    :after evil
+    :config
+    (evil-collection-init))
+#+end_src
+
+* Navigation Helpers and Utilities
+#+begin_src emacs-lisp
+  (use-package which-key
+    :defer 1
+    :config
+    (which-key-mode))
+
+  (use-package avy
+    :bind
+    ("C-:" . avy-goto-char)
+    ("C-'" . avy-goto-char-2)
+    ("M-g f" . avy-goto-line)
+    ("M-g w" . avy-goto-word-1))
+
+  (use-package ace-window
+    :bind ("M-o" . ace-window)
+    :config
+    (setq aw-scope 'global))
+
+  (use-package helpful
+    :commands (helpful-callable helpful-variable helpful-command helpful-key)
+    :bind
+    ([remap describe-function] . helpful-callable)
+    ([remap describe-variable] . helpful-variable)
+    ([remap describe-command]  . helpful-command)
+    ([remap describe-key]      . helpful-key))
+
+  ;; Enable window navigation with Shift+arrow keys
+  (windmove-default-keybindings)
+#+end_src

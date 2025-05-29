@@ -21,7 +21,7 @@ accordingly.
 
 (package-initialize)
 
-(setq faijdherbe-config--config-path
+(setq mistertuna-config--config-path
       "~/Documents/emacs-config/literate")
 
 (org-babel-load-file
@@ -31,8 +31,7 @@ accordingly.
 
 Alternatively, you can press =C-c C-c= on this codeblock to
 evaluate immediately.
-
-* Desktop file for testing
+ Desktop file for testing
 During debugging i'd like to use a desktop file for quick launching Emacs with our own configuration.  Let's call our app =Mymacs=.
 
 The path from the configuration earlier is injected upon tangling this file (=C-c C-v t=).
@@ -48,23 +47,50 @@ Name[en_US]=Mymacs
   #+end_src
 /note: It looks like GitHub and Hugo don't support =conf-desktop=, hence the lack of syntax highlighting. I'll need to look into this some other time./
 
+* Package Manager
+
+#+begin_src emacs-lisp
+(setq package-enable-at-startup nil)
+
+(defvar elpaca-installer-version 0.5)
+(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+(let ((repo (expand-file-name "elpaca/" elpaca-repos-directory)))
+  (unless (file-exists-p (expand-file-name "elpaca.el" repo))
+    (make-directory repo t)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/progfolio/elpaca/main/elpaca-installer.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (add-to-list 'load-path repo)
+  (require 'elpaca))
+
+(elpaca elpaca-use-package
+  (elpaca-use-package-mode))
+
+(setq use-package-always-ensure t)
+#+end_src
+
+
 * Specific Configurations
 Below we find all our configuration files.  I should be able to merge
 the first two columns as it's pretty much redundant info, but let's
 postpone this for now. 
   
 #+TBLNAME: orgmode-files
-| config     | filename          | enabled | description                                                                            |
-|------------+-------------------+---------+----------------------------------------------------------------------------------------|
-| [[file:02-package.org][package]]    | 02-package.org    | yes     | setup package repository and package manager.                                          |
-| exwm       | 03-exwm.org       | no      | setup emacs as window-manager                                                          |
-| [[file:20-theme.org][theme]]      | 20-theme.org      | yes     | theme and ui config                                                                    |
-| [[file:30-navigation.org][navigation]] | 30-navigation.org | yes     | navigation and autocomplete                                                           |
-| [[file:40-dev.org][dev]]        | 40-dev.org        | yes     | generic development                                                                    |
-| php        |                   | no      | as this is my main language, it deserves its own config file                           |
-| org-mode   |                   | no      | org-roam and org-agenda configuration                                                  |
-| config     | 99-config.org     | yes     | Local config that can set some specific settings                                       |
-|            |                   |         |                                                                                        |
+| config             | filename          | enabled | description                                                  |
+|--------------------+-------------------+---------+--------------------------------------------------------------|
+| UI Improvment      | 20-ui.org         | yes     | UI modifications (Theme, Modeline, Icons, ETC.)              |
+| editing enhance    | 30-edit.org       | yes     | Editing Enhancements ( )                                     |
+| [[file:30-navigation.org][navigation]]         | 40-navigation.org | yes     | navigation and autocomplete                                  |
+| Project Management | 50-projects.org   | yes     | Project Management and Version Control                       |
+| php                |                   | no      | as this is my main language, it deserves its own config file |
+| org-mode           |                   | no      | org-roam and org-agenda configuration                        |
+| config             | 99-config.org     | yes     | Local config that can set some specific settings             |
+|                    |                   |         |                                                              |
 
 The following script will use the table above as source to load all
 other configurations in order - if enabled.

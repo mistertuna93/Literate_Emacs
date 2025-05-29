@@ -1,0 +1,30 @@
+#+TITLE: Package Config
+#+DATE: <2025-05-28 Wed 09:54> 
+#+DRAFT: false
+#+PROPERTY: header-args:emacs-lisp :comments link :results none
+#+TAGS[]: emacs config
+#+ALIASES[]: /emacs-config/01-main/02-package.html
+
+* Repositories
+First we'll setup our different repositories.
+
+#+begin_quote note
+I'm not entirely sure these are all still relevant, as this is a
+copy/paste from my current =init.el=, I will have to look into this at
+a later stage.
+#+end_quote
+
+#+begin_src emacs-lisp
+(require 'package)
+
+(setq package-enable-at-startup nil)
+
+(setq package-archives '(("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                         ("gnu" . "http://elpa.gnu.org/packages/")
+                         ("melpa" . "https://melpa.org/packages/")
+                         ("tromey"  . "http://tromey.com/elpa/")))
+(package-initialize)
+#+END_SRC
+
+
+
