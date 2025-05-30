@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
 # Define the base directory (change if not using ~/.emacs.d/)
-EMACS_DIR="${HOME}/.emacs.default"
+EMACS_DIR="${HOME}/Documents/emacs-config" #.emacs.default
 SNIPPET_DIR="${EMACS_DIR}/snippets"
 TEMPLATE_DIR="${EMACS_DIR}/templates"
 HTML_DIR="${EMACS_DIR}/html"
+ELISP_DIR="${EMACS_DIR}/elisp"
 
 # Create directories
 mkdir -p "${SNIPPET_DIR}/emacs-lisp-mode"
@@ -12,6 +13,7 @@ mkdir -p "${SNIPPET_DIR}/org-mode"
 mkdir -p "${TEMPLATE_DIR}"
 mkdir -p "${HTML_DIR}/static"
 mkdir -p "${HTML_DIR}/docs"
+mkdir -p "${ELISP_DIR}"
 
 # Create Emacs Lisp mode snippet
 cat << 'EOF' > "${SNIPPET_DIR}/emacs-lisp-mode/hello-world"

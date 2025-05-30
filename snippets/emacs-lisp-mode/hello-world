@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Hello World
+# key: hw
+# --
+(message "Hello, world!")

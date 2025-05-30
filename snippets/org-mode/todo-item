@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Org TODO Item
+# key: todo
+# --
+* TODO ${1:Task description}
+  DEADLINE: ${2:`(org-insert-time-stamp (current-time))`}
+$0
