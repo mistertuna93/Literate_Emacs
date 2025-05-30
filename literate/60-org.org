@@ -1,0 +1,159 @@
+#+TITLE: Org Mode Enhancements
+#+PROPERTY: header-args :tangle yes :results silent :exports code
+#+OPTIONS: toc:2 num:nil
+#+STARTUP: showeverything
+
+* Org Mode Enhancements
+This module enhances Org mode with features for knowledge management, productivity, aesthetics, and publishing.
+
+* Knowledge Management
+
+** org-roam
+Provides a Roam Research-like experience for interconnected note-taking.
+
+#+begin_src emacs-lisp
+(use-package org-roam
+  :ensure t
+  :init
+  (setq org-roam-directory "~/org-roam/")
+  :custom
+  (org-roam-v2-ack t)
+  :config
+  (org-roam-db-autosync-mode))
+#+end_src
+
+** org-roam-ui
+Offers a graphical interface for visualizing org-roam notes.
+
+#+begin_src emacs-lisp
+(use-package org-roam-ui
+  :ensure t
+  :after org-roam
+  :config
+  (setq org-roam-ui-sync-theme t
+        org-roam-ui-follow t
+        org-roam-ui-update-on-save t
+        org-roam-ui-open-on-start t))
+#+end_src
+
+** org-transclusion
+Allows inclusion of content from other Org files.
+
+#+begin_src emacs-lisp
+(use-package org-transclusion
+  :ensure t
+  :after org
+  :hook (org-mode . org-transclusion-mode))
+#+end_src
+
+* Productivity Enhancements
+
+** org-super-agenda
+Enhances the Org agenda view with grouping and sorting.
+
+#+begin_src emacs-lisp
+(use-package org-super-agenda
+  :ensure t
+  :config
+  (org-super-agenda-mode))
+#+end_src
+
+** org-web-tools
+Extracts readable content from web pages into Org format.
+
+#+begin_src emacs-lisp
+(use-package org-web-tools
+  :ensure t
+  :commands (org-web-tools-insert-link-for-url
+             org-web-tools-read-url-as-org))
+#+end_src
+
+** org-cliplink
+Inserts web links with titles fetched from the URL.
+
+#+begin_src emacs-lisp
+(use-package org-cliplink
+  :ensure t
+  :bind ("C-c i l" . org-cliplink))
+#+end_src
+
+** toc-org
+Automatically generates and updates tables of contents in Org files.
+
+#+begin_src emacs-lisp
+(use-package toc-org
+  :ensure t
+  :hook (org-mode . toc-org-mode))
+#+end_src
+
+* Visual Enhancements
+
+** org-bullets
+Replaces standard bullets with prettier symbols.
+
+#+begin_src emacs-lisp
+(use-package org-bullets
+  :ensure t
+  :hook (org-mode . org-bullets-mode))
+#+end_src
+
+** org-modern
+Applies a modern look to Org buffers.
+
+#+begin_src emacs-lisp
+(use-package org-modern
+  :ensure t
+  :hook (org-mode . org-modern-mode))
+#+end_src
+
+** org-beautify-theme
+Provides a set of beautiful themes for Org mode.
+
+#+begin_src emacs-lisp
+(use-package org-beautify-theme
+  :ensure t)
+#+end_src
+
+** calfw and calfw-org
+Displays a calendar view of your Org agenda.
+
+#+begin_src emacs-lisp
+(use-package calfw
+  :ensure t)
+
+(use-package calfw-org
+  :ensure t
+  :after calfw
+  :config
+  (setq cfw:org-overwrite-default-keybinding t))
+#+end_src
+
+* Publishing
+
+** org-protocol-capture-html
+Captures web content into Org files using org-protocol.
+
+#+begin_src emacs-lisp
+(use-package org-protocol-capture-html
+  :ensure t
+  :after org
+  :config
+  (require 'org-protocol-capture-html))
+#+end_src
+
+** org-html-themes
+Applies themes to exported HTML from Org files.
+
+#+begin_src emacs-lisp
+(use-package org-html-themes
+  :ensure t)
+#+end_src
+
+** ox-org
+Exports Org files to other Org files, useful for publishing workflows.
+
+#+begin_src emacs-lisp
+(use-package ox-org
+  :ensure nil
+  :after org)
+#+end_src
