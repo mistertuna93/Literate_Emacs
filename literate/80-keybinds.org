@@ -72,6 +72,26 @@ This module centralizes all global keybindings using `general.el`. It declares a
   "org" '(org-mode :which-key "org mode"))
 #+end_src
 
+* Tangle
+
+#+begin_src emacs-lisp :tangle ../tangled/40-keybindings.el :comments link
+;;; Tangle all Org files in literate/ directory
+
+(defun my/tangle-all-literate-config ()
+"Tangle all Org files in the literate/ folder using their individual tangle settings."
+(interactive)
+(let ((org-confirm-babel-evaluate nil)) ;; Skip tangle prompts
+(dolist (file (directory-files (expand-file-name "literate" user-emacs-directory) t "\.org$"))
+(org-babel-tangle-file file))))
+
+;; Bind under: SPC e t (Export → Tangle)
+(general-define-key
+:states '(normal visual)
+:prefix "SPC e"
+"t" #'my/tangle-all-literate-config)
+#+end_src
+
+
 * Tools (SPC o)
 
 #+begin_src emacs-lisp
