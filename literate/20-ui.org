@@ -1,7 +1,7 @@
 #+TITLE: UI / Theme / Modeline
 #+DATE: 2025-05-28T00:00:00+01:00
 #+DRAFT: false
-#+PROPERTY: header-args:emacs-lisp :comments link :results none
+#+PROPERTY: header-args:emacs-lisp :comments link :results none :tangle  
 #+TAGS[]: emacs config ui
 #+ALIASES[]: /emacs-config/01-main/20-ui.html
 

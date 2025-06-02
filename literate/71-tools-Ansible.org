@@ -1,0 +1,124 @@
+#+TITLE: Tools - Tangle Ansible
+#+AUTHOR: Charles Staub
+#+DATE: 2025-05-31
+#+PROPERTY: header-args :tangle yes :comments link :results none
+#+TAGS[]: emacs config
+#+TOC: headlines 2
+
+* Overview
+This module provides tooling to manage and normalize Org headers for your Ansible infrastructure configuration.
+It ensures every literal module has standardized metadata, tangling rules, and table of contents.
+
+* Features
+- Scans all Org files in =Literal/=.
+- Ensures required headers are present:
+  - =#+TITLE=
+  - =#+AUTHOR=
+  - =#+DATE=
+  - =#+PROPERTY: HEADER-ARGS=
+  - =#+OPTIONS: toc:2=
+  - =#+LAYOUT=
+  - =#+ACTIVE=
+- Optionally adds =* Table of Contents= section if missing.
+
+* Ansible Org Header Validator
+
+This utility will:
+- Ask for your =common.org= catalog file
+- Ask for your =literal/= directory
+- Parse the catalog table
+- Ensure all documents in =literal/= have valid Org headers
+- Insert `:tangle` property pointing to the correct export path
+- Add `:TOC:` tag to top if missing
+- Offer to tangle files after validation
+- Record undo state before making changes
+
+#+begin_src emacs-lisp :results none
+(defun mistertuna/validate-and-tangle-ansible-orgs ()
+  "Validate headers for all literal/*.org files using the common.org catalog."
+  (interactive)
+  (let* ((catalog-file (read-file-name "Select common.org catalog file: "))
+         (literal-dir (read-directory-name "Select literal directory: "))
+         (org-files (directory-files literal-dir t "\\.org$"))
+         (catalog-table nil)
+         (updated-files '())
+         (undo-boundary (current-buffer)))
+
+    ;; Parse catalog table from common.org
+    (with-temp-buffer
+      (insert-file-contents catalog-file)
+      (goto-char (point-min))
+      (when (re-search-forward "^\\*+ +Ansible Module Catalog" nil t)
+        (org-table-map-tables
+         (lambda ()
+           (when (looking-at "|")
+             (setq catalog-table (org-table-to-lisp)))))))
+
+(dolist (file org-files)
+  (let* ((filename (file-name-nondirectory file))
+         (title (capitalize (file-name-base filename)))
+         (author "Charles Staub")
+         (date (format-time-string "%Y-%m-%d"))
+         (lines (with-temp-buffer
+                  (insert-file-contents file)
+                  (split-string (buffer-string) "\n")))
+         (tangle-path
+          (catch 'found  ;; <-- quote the symbol
+            (dolist (row catalog-table)
+              (when (string= (car row) title)
+                (throw 'found (car row))))
+            nil))
+         (modified nil))
+    ;; your code continues here...
+    ))
+
+    
+
+        (with-temp-buffer
+          (insert (mapconcat #'identity lines "\n"))
+          (goto-char (point-min))
+
+          ;; Remove old headers
+          (while (re-search-forward "^#\\+\\(TITLE\\|AUTHOR\\|DATE\\|PROPERTY\\|TAGS\\|TOC\\):.*$" nil t)
+            (replace-match ""))
+
+          ;; Insert fresh headers at top
+          (goto-char (point-min))
+          (insert (format "#+TITLE: %s\n" title))
+          (insert (format "#+AUTHOR: %s\n" author))
+          (insert (format "#+DATE: %s\n" date))
+          (insert "#+PROPERTY: header-args :comments link :results none\n")
+          (when tangle-path
+            (insert (format "#+PROPERTY: header-args :tangle %s\n" tangle-path)))
+          (insert "#+TAGS[]: emacs config\n")
+          (insert "#+TOC: headlines 2\n\n")
+
+          ;; Ensure :TOC: is present near the top
+          (unless (re-search-forward "^#\\+TOC:" 10 t)
+            (goto-char (point-min))
+            (forward-line 1)
+            (insert "#+TOC: headlines 2\n"))
+
+          ;; Save if changed
+          (let ((new-content (buffer-string)))
+            (unless (string= (mapconcat #'identity lines "\n") new-content)
+              (write-region new-content nil file)
+              (push file updated-files)))))
+
+    (when (yes-or-no-p "Tangle all updated Org files?")
+      (dolist (f updated-files)
+        (org-babel-tangle-file f)))
+    (message "Header normalization complete. Updated %d files." (length updated-files))))
+#+end_src
+
+* Keybinding (Optional)
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "C-c o n") #'orc/normalize-org-headers)
+#+END_SRC
+
+* Usage
+1. Save this module.
+2. Run =M-x org-babel-tangle= to export the Emacs Lisp.
+3. Call the command with =M-x orc/normalize-org-headers= or bind it to a key.
+4. All Org files under =Literal/= will be normalized.
+

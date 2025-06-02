@@ -2,7 +2,7 @@
 #+DATE: 2023-01-22T10:02:31+01:00
 #+DRAFT: false
 #+TAGS[]: emacs config
-#+PROPERTY: header-args:emacs-lisp :comments link :results none 
+#+PROPERTY: header-args:emacs-lisp :comments link :results none
 
 * Main config
 This is the main entry point for my literate configuration.  I've
@@ -16,17 +16,20 @@ accordingly.
 
 #+begin_src emacs-lisp :tangle init.el
 ;; load main literate configuration file
-;(setq user-init-file (or load-file-name (buffer-file-name)))
-;(setq user-emacs-directory (concat (file-name-directory user-init-file) "../.emacs.d"))
+          ;(setq user-init-file (or load-file-name (buffer-file-name)))
+                                          ;(setq user-emacs-directory (concat (file-name-directory user-init-file) "../.emacs.d"))
 
-(package-initialize)
+;; (package-initialize)
+;; (setq mistertuna-config--config-path
+;;      "~/Documents/emacs-config/literate")
 
-(setq mistertuna-config--config-path
-      "~/Documents/emacs-config/literate")
+(defvar mistertuna-config--config-path
+  (expand-file-name "~/Documents/emacs-config/literate/")
+  "The root path to MisterTuna's Emacs configuration.")
 
 (org-babel-load-file
- (expand-file-name (concat (string-trim mistertuna-config--config-path "/")
-                           "/01-main.org")))
+ (expand-file-name "01-main.org" mistertuna-config--config-path))
+
 #+end_src
 
 Alternatively, you can press =C-c C-c= on this codeblock to
@@ -36,7 +39,44 @@ During debugging i'd like to use a desktop file for quick launching Emacs with o
 
 The path from the configuration earlier is injected upon tangling this file (=C-c C-v t=).
 
-  #+begin_src conf-desktop :tangle ~/.local/share/applications/mymacs.desktop 
+
+* Automated Tangling on Save
+
+This will ensure that every time an Org file inside our config is saved,
+it is automatically tangled to the `elisp/` directory.
+
+#+begin_src emacs-lisp :tangle yes
+(defun mistertuna/tangle-org-file (org-file)
+  "Tangle ORG-FILE into the elisp/ directory next to the literate config."
+  (let* ((base-name (file-name-base org-file))
+         (dest-dir (expand-file-name "elisp" mistertuna-config--config-path))
+         (dest-file (expand-file-name (concat base-name ".el") dest-dir)))
+    (unless (file-directory-p dest-dir)
+      (make-directory dest-dir t))
+    (org-babel-tangle-file org-file dest-file)
+    (message "Tangled %s → %s" org-file dest-file)))
+
+(defun mistertuna/tangle-all-literate-org-files ()
+  "Tangle all .org files in the config path into elisp/ directory."
+  (interactive)
+  (let ((org-files (directory-files mistertuna-config--config-path t "\\.org$")))
+    (dolist (f org-files)
+      (mistertuna/tangle-org-file f))))
+
+(defun mistertuna/auto-tangle-on-save ()
+  "Auto-tangle the current file or all files if Main is being saved."
+  (when (and (eq major-mode 'org-mode)
+             (string-prefix-p (expand-file-name mistertuna-config--config-path)
+                              (buffer-file-name)))
+    (if (string-equal (file-name-nondirectory (buffer-file-name)) "01-main.org")
+        (mistertuna/tangle-all-literate-org-files)
+      (mistertuna/tangle-org-file (buffer-file-name)))))
+
+(add-hook 'after-save-hook #'mistertuna/auto-tangle-on-save)
+#+end_src
+
+
+#+begin_src conf-desktop :tangle ~/.local/share/applications/mymacs.desktop :mkdirp yes
 [Desktop Entry]
 Name=Mymacs
 Type=Application
@@ -44,7 +84,7 @@ Comment=Emacs with my WIP Configuration
 Exec=/usr/bin/emacs -Q --eval "(setq jf/dev-env t)" -l "~/Documents/emacs-config/literate/init.el"
 Icon=/opt/giteye/icon.xpm
 Name[en_US]=Mymacs
-  #+end_src
+#+end_src
 /note: It looks like GitHub and Hugo don't support =conf-desktop=, hence the lack of syntax highlighting. I'll need to look into this some other time./
 
 * Package Manager
@@ -59,7 +99,7 @@ Name[en_US]=Mymacs
 (let ((repo (expand-file-name "elpaca/" elpaca-repos-directory)))
   (unless (file-exists-p (expand-file-name "elpaca.el" repo))
     (make-directory repo t)
-    (with-current-buffer
+    (with-current-buffer 
         (url-retrieve-synchronously
          "https://raw.githubusercontent.com/progfolio/elpaca/main/elpaca-installer.el"
          'silent 'inhibit-cookies)
@@ -81,16 +121,33 @@ the first two columns as it's pretty much redundant info, but let's
 postpone this for now. 
   
 #+TBLNAME: orgmode-files
-| config             | filename          | enabled | description                                                  |
-|--------------------+-------------------+---------+--------------------------------------------------------------|
-| UI Improvment      | 20-ui.org         | yes     | UI modifications (Theme, Modeline, Icons, ETC.)              |
-| editing enhance    | 30-edit.org       | yes     | Editing Enhancements ( )                                     |
-| [[file:30-navigation.org][navigation]]         | 40-navigation.org | yes     | navigation and autocomplete                                  |
-| Project Management | 50-projects.org   | yes     | Project Management and Version Control                       |
-| php                |                   | no      | as this is my main language, it deserves its own config file |
-| org-mode           |                   | no      | org-roam and org-agenda configuration                        |
-| config             | 99-config.org     | yes     | Local config that can set some specific settings             |
-|                    |                   |         |                                                              |
+| Module             | filename             | enabled | description                                     |
+|--------------------+----------------------+---------+-------------------------------------------------|
+| Tunamacs           | 10-tmacs.org         | yes     | The Entry point into Literate Config.           |
+|                    |                      |         |                                                 |
+|--------------------+----------------------+---------+-------------------------------------------------|
+| UI Improvment      | 20-ui.org            | yes     | UI modifications (Theme, Modeline, Icons, ETC.) |
+|                    |                      |         |                                                 |
+|--------------------+----------------------+---------+-------------------------------------------------|
+| editing enhance    | 30-edit.org          | yes     | Editing Enhancements                            |
+|                    |                      |         |                                                 |
+|--------------------+----------------------+---------+-------------------------------------------------|
+| [[file:30-navigation.org][navigation]]         | 40-navigation.org    | yes     | navigation and completion                       |
+|                    |                      |         |                                                 |
+|--------------------+----------------------+---------+-------------------------------------------------|
+| Project Management | 50-projects.org      | yes     | Project Management and Version Control          |
+|                    |                      |         |                                                 |
+|--------------------+----------------------+---------+-------------------------------------------------|
+| org-mode           | 60-org.org           | yes     | Org-mode customization and package config       |
+|                    |                      |         |                                                 |
+|--------------------+----------------------+---------+-------------------------------------------------|
+| tools              | 70-tools.org         | yes     | Misc. tools (Ai, Devops, shell)                 |
+| ansible tools      | 71-tools-Ansible.org | yes     | Scripting for Ansible scaffold Literate Doc     |
+|--------------------+----------------------+---------+-------------------------------------------------|
+| keybinds           | 80-keybinds.org      | yes     | setup Keymaps for Modules                       |
+|                    |                      |         |                                                 |
+|--------------------+----------------------+---------+-------------------------------------------------|
+|                    |                      |         |                                                 |
 
 The following script will use the table above as source to load all
 other configurations in order - if enabled.

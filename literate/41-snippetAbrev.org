@@ -1,0 +1,101 @@
+#+title: Abbreviations, Snippets, and Expansions
+#+property: header-args :tangle ../tangled/41-AbrvSnip.el :mkdirp yes
+#+startup: showeverything
+#+auto_tangle: t
+
+* Abbreviations
+Configure Emacs' built-in abbreviation system for auto-expanding text-based shortcuts.
+
+#+begin_src emacs-lisp
+(setq-default abbrev-mode t)
+
+(define-abbrev-table 'global-abbrev-table
+  '(("afaik" "as far as I know")
+    ("btw"   "by the way")
+    ("imho"  "in my humble opinion")
+    ("ty"    "thank you")
+    ("yw"    "you're welcome")
+    ("pls"   "please")))
+
+(setq save-abbrevs 'silently)
+(setq abbrev-file-name (expand-file-name "abbrev_defs" user-emacs-directory))
+
+(when (file-exists-p abbrev-file-name)
+  (quietly-read-abbrev-file))
+#+end_src
+
+---
+
+* Snippets with Yasnippet
+Set up Yasnippet with a custom snippets directory. Useful for programming and documentation modes.
+
+#+begin_src emacs-lisp
+(use-package yasnippet
+  :ensure t
+  :hook ((prog-mode text-mode org-mode) . yas-minor-mode)
+  :config
+  (setq yas-snippet-dirs
+        (list (expand-file-name "snippets" user-emacs-directory)))
+  (yas-reload-all))
+#+end_src
+
+** Example Snippet File
+Create a snippet in ~snippets/emacs-lisp-mode/hello-world~ with the following content:
+
+#+begin_src text
+# -*- mode: snippet -*-
+# name: Hello World
+# key: hw
+# --
+(message "Hello, world!")
+#+end_src
+
+To use it, type `hw` and press `TAB` in an `emacs-lisp-mode` buffer.
+
+---
+
+* Inline Templates with Tempel (Optional)
+Tempel is a lightweight alternative to Yasnippet for inline template expansion.
+
+#+begin_src emacs-lisp
+(use-package tempel
+  :ensure t
+  :bind (("M-+" . tempel-complete)  ;; expand or cycle templates
+         ("M-*" . tempel-insert))   ;; insert without completion
+  :hook ((prog-mode . tempel-setup-capf)
+         (text-mode . tempel-setup-capf)))
+
+(use-package tempel-collection
+  :ensure t)
+#+end_src
+
+** Example Tempel Template
+Put this in a file called ~tempel-templates~:
+
+#+begin_src lisp
+(progn
+  (setq tempel-path
+        (list (expand-file-name "templates" user-emacs-directory))))
+#+end_src
+
+Example contents of ~/templates/tempel.eld~:
+
+#+begin_src emacs-lisp
+(hello
+ "Hello, " (p "name") "!")
+
+(defun
+ "(defun " (p "name") " (" (p "args") ")\n  " (p "body") "\n)")
+#+end_src
+
+You can now type `M-+` and choose `hello` or `defun` in any buffer.
+
+---
+
+* Summary
+This module sets up:
+- Built-in Abbrev mode for fast text macros
+- Yasnippet with a custom snippet directory
+- Tempel for minimal inline templates
+
+Ready for fast expansions and productivity improvements in any workflow.
