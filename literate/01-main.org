@@ -24,8 +24,7 @@ accordingly.
 ;;      "~/Documents/emacs-config/literate")
 
 (defvar mistertuna-config--config-path
-  (expand-file-name "~/Documents/emacs-config/literate/")
-  "The root path to MisterTuna's Emacs configuration.")
+  (expand-file-name "~/Documents/emacs-config/literate/"))
 
 (org-babel-load-file
  (expand-file-name "01-main.org" mistertuna-config--config-path))
@@ -78,12 +77,11 @@ it is automatically tangled to the `elisp/` directory.
 
 #+begin_src conf-desktop :tangle ~/.local/share/applications/mymacs.desktop :mkdirp yes
 [Desktop Entry]
-Name=Mymacs
+Name=TunaMacs
 Type=Application
 Comment=Emacs with my WIP Configuration
 Exec=/usr/bin/emacs -Q --eval "(setq jf/dev-env t)" -l "~/Documents/emacs-config/literate/init.el"
-Icon=/opt/giteye/icon.xpm
-Name[en_US]=Mymacs
+Name[en_US]=TunaMacs
 #+end_src
 /note: It looks like GitHub and Hugo don't support =conf-desktop=, hence the lack of syntax highlighting. I'll need to look into this some other time./
 
@@ -133,7 +131,7 @@ postpone this for now.
 |                    |                      |         |                                                 |
 |--------------------+----------------------+---------+-------------------------------------------------|
 | [[file:30-navigation.org][navigation]]         | 40-navigation.org    | yes     | navigation and completion                       |
-|                    |                      |         |                                                 |
+|                    | 41-snippetAbrev.org  | yes     | adds snippets and abreviations                  |
 |--------------------+----------------------+---------+-------------------------------------------------|
 | Project Management | 50-projects.org      | yes     | Project Management and Version Control          |
 |                    |                      |         |                                                 |
