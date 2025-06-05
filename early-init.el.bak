@@ -1,0 +1,39 @@
+;; [[file:literate/01-main.org::*Early Init Configuration][Early Init Configuration:1]]
+;; Disable package.el in favor of straight.el
+(setq package-enable-at-startup nil)
+
+;; Prevent the glimpse of un-styled Emacs by disabling these UI elements early.
+(push '(menu-bar-lines . 0) default-frame-alist)
+(push '(tool-bar-lines . 0) default-frame-alist)
+(push '(vertical-scroll-bars) default-frame-alist)
+
+;; Resizing the Emacs frame can be a terribly expensive part of changing the
+;; font. By inhibiting this, we easily halve startup times with fonts that are
+;; larger than the system default.
+(setq frame-inhibit-implied-resize t)
+
+;; Prevent unwanted runtime builds in noninteractive sessions (compilation)
+(setq comp-deferred-compilation-deny-list nil)
+
+;; Native compilation settings
+(when (featurep 'native-compile)
+  ;; Silence compiler warnings as they can be pretty disruptive
+  (setq native-comp-async-report-warnings-errors nil)
+
+  ;; Make native compilation happens asynchronously
+  (setq native-comp-deferred-compilation t)
+
+  ;; Set the right directory to store the native compilation cache
+  (add-to-list 'native-comp-eln-load-path (expand-file-name "eln-cache/" user-emacs-directory)))
+
+;; Performance tweaks for modern machines
+(setq gc-cons-threshold 100000000) ; 100mb
+(setq read-process-output-max (* 1024 1024)) ; 1mb
+
+;; Increase the amount of data which Emacs reads from processes
+(setq read-process-output-max (* 1024 1024)) ; 1mb
+
+;; Add XDG_CONFIG_HOME to exec-path
+(when (getenv "XDG_CONFIG_HOME")
+  (add-to-list 'exec-path (concat (getenv "XDG_CONFIG_HOME") "/bin")))
+;; Early Init Configuration:1 ends here

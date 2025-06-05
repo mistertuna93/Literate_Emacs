@@ -1,7 +1,9 @@
-#+title: Abbreviations, Snippets, and Expansions
-#+property: header-args :tangle ../tangled/41-AbrvSnip.el :mkdirp yes
-#+startup: showeverything
-#+auto_tangle: t
+#+OPTIONS: :toc 2
+#+DESCRIPTION: Configuration for Snippetabrev
+#+DATE: 2025-06-04 00:19:51
+#+AUTHOR: mistertuna93
+#+TITLE: Snippetabrev
+#+PROPERTY: header-args:emacs-lisp :tangle ../elisp/41-snippetabrev.el
 
 * Abbreviations
 Configure Emacs' built-in abbreviation system for auto-expanding text-based shortcuts.

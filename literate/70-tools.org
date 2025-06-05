@@ -1,7 +1,8 @@
+#+DESCRIPTION: Configuration for Tools
+#+DATE: 2025-06-04 00:20:43
+#+AUTHOR: mistertuna93
 #+TITLE: Tools
-#+PROPERTY: header-args :tangle yes :results silent :exports code
-#+OPTIONS: toc:2 num:nil
-#+STARTUP: showeverything
+#+PROPERTY: header-args:emacs-lisp :tangle ../elisp/70-tools.el
 
 * Tools
 This module enhances Emacs with AI assistants, DevOps utilities, terminal emulators, and fun enhancements.

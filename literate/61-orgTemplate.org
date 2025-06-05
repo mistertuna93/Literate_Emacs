@@ -1,8 +1,8 @@
-#+TITLE: 61-orgTemplate.org - Org Mode Capture Templates
-#+AUTHOR: Charles Staub
-#+DESCRIPTION: Org mode configuration including capture templates and structure templates.
-#+DATE: 2025-05-29
-#+TAGS: emacs, org, productivity
+#+DESCRIPTION: Configuration for Orgtemplate
+#+DATE: 2025-06-04 00:20:36
+#+AUTHOR: mistertuna93
+#+TITLE: Orgtemplate
+#+PROPERTY: header-args:emacs-lisp :tangle ../elisp/61-orgTemplate.el
 
 * Org Mode Configuration
 

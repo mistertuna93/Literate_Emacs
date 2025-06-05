@@ -1,0 +1,137 @@
+#+TITLE: Evil & General Keybindings
+#+PROPERTY: header-args :tangle yes :results silent :exports code
+#+OPTIONS: toc:2 num:nil
+#+STARTUP: showeverything
+
+* Evil Mode Setup
+
+#+begin_src emacs-lisp
+(use-package evil
+  :ensure t
+  :init
+  (setq evil-want-integration t)
+  (setq evil-want-keybinding nil)
+  (setq evil-want-C-u-scroll t)
+  (setq evil-want-C-i-jump t)
+  (setq evil-respect-visual-line-mode t)
+  (setq evil-undo-system 'undo-redo)
+  :config
+  (evil-mode 1)
+  (dolist (mode '(prog-mode text-mode conf-mode))
+    (evil-set-initial-state mode 'normal)))
+#+end_src
+
+* Evil Collection Setup
+
+#+begin_src emacs-lisp
+(use-package evil-collection
+  :after evil
+  :ensure t
+  :custom
+  (evil-collection-company-use-tng nil)
+  :config
+  (evil-collection-init))
+#+end_src
+
+* General.el and Leader Key
+
+#+begin_src emacs-lisp
+(use-package general
+  :ensure t
+  :config
+  (general-create-definer my/leader-key
+    :states '(normal insert visual emacs)
+    :prefix "SPC"
+    :global-prefix "C-SPC"))
+#+end_src
+
+* Global Leader Keybindings
+
+#+begin_src emacs-lisp
+(my/leader-key
+  ;; M-x
+  "SPC" '(execute-extended-command :which-key "M-x")
+
+  ;; Buffer and Window Management
+  "b"  '(:ignore t :which-key "buffers")
+  "bb" '(switch-to-buffer :which-key "switch")
+  "bd" '(kill-this-buffer :which-key "kill")
+  "bn" '(next-buffer :which-key "next")
+  "bp" '(previous-buffer :which-key "prev")
+  "bs" '(ibuffer :which-key "ibuffer")
+
+  "w"  '(:ignore t :which-key "windows")
+  "ws" '(split-window-below :which-key "split below")
+  "wv" '(split-window-right :which-key "split right")
+  "wd" '(delete-window :which-key "delete")
+  "wo" '(delete-other-windows :which-key "only")
+  "ww" '(other-window :which-key "other")
+
+  ;; File and Project Navigation
+  "f"  '(:ignore t :which-key "files")
+  "ff" '(find-file :which-key "find file")
+  "fs" '(save-buffer :which-key "save")
+
+  "p"  '(:ignore t :which-key "project")
+  "pp" '(project-switch-project :which-key "switch project")
+  "pf" '(project-find-file :which-key "find file in project")
+  "pb" '(project-switch-to-buffer :which-key "project buffer")
+  "pg" '(project-find-regexp :which-key "grep")
+
+  ;; Org Mode
+  "o"  '(:ignore t :which-key "org/tools")
+  "oa" '(:ignore t :which-key "agenda/ai")
+  "oaA" '(org-agenda :which-key "agenda")
+  "oac" '(org-capture :which-key "capture")
+  "oar" '(org-roam-node-find :which-key "roam node")
+  "oai" '(org-ai-mode :which-key "Org-AI")
+  "oap" '(org-protocol-capture-html :which-key "capture html")
+
+  "or"  '(:ignore t :which-key "roam")
+  "orr" '(org-roam-buffer-toggle :which-key "toggle roam buffer")
+  "org" '(org-mode :which-key "org mode")
+
+  ;; Tools
+  "d"  '(:ignore t :which-key "DevOps")
+  "dd" '(docker :which-key "Docker")
+  "df" '(dockerfile-mode :which-key "Dockerfile mode")
+  "dk" '(kubel :which-key "Kubernetes")
+
+  "t"  '(:ignore t :which-key "Terminals")
+  "tv" '(vterm :which-key "vterm")
+  "tm" '(multi-vterm :which-key "multi-vterm")
+  "ts" '(shell-pop :which-key "shell-pop")
+  "tc" '(compile :which-key "compile")
+
+  "a"  '(:ignore t :which-key "AI")
+  "ag" '(gptel :which-key "GPTel")
+  "aa" '(aider :which-key "Aider AI Assistant")
+
+  "n"  '(:ignore t :which-key "Novelty")
+  "nf" '(fireplace :which-key "Fireplace")
+  "nn" '(nyan-mode :which-key "Nyan mode")
+  "np" '(pacmacs :which-key "Pacmacs")
+  "ng" '(gnugo :which-key "Play Go")
+
+  ;; Language & Development Tools
+  "l"  '(:ignore t :which-key "language/tools")
+  "lf" '(eglot-format :which-key "format buffer")
+  "lr" '(eglot-rename :which-key "rename")
+  "lh" '(eldoc :which-key "hover info")
+  "lj" '(flycheck-next-error :which-key "next error")
+  "lk" '(flycheck-previous-error :which-key "prev error")
+  "ld" '(xref-find-definitions :which-key "go to def")
+
+  ;; Miscellaneous Enhancements
+  "t" '(:ignore t :which-key "toggles")
+  "tt" '(visual-line-mode :which-key "visual line")
+  "tn" '(display-line-numbers-mode :which-key "line numbers")
+  "tw" '(whitespace-mode :which-key "whitespace"))
+#+end_src
+
+* Helpful Defaults
+
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-x k") #'kill-current-buffer)
+(global-set-key (kbd "M-/") #'hippie-expand)
+#+end_src

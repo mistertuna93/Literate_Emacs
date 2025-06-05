@@ -2,4 +2,13 @@
 99-config.org
 LICENSE
 *~
+<<<<<<< HEAD
+  
+*.eln
+*.tmp
+/elpa/
+/straight/
+*.org#
+=======
 
+>>>>>>> e33cdaf (pushing to have copilot look at current base.)

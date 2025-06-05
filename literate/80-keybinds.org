@@ -1,7 +1,9 @@
-#+TITLE: Keybindings
-#+PROPERTY: header-args :tangle yes :results silent :exports code
-#+OPTIONS: toc:2 num:nil
-#+STARTUP: showeverything
+#+OPTIONS: :toc 2
+#+DESCRIPTION: Configuration for Keybinds
+#+DATE: 2025-06-04 00:20:59
+#+AUTHOR: mistertuna93
+#+TITLE: Keybinds
+#+PROPERTY: header-args:emacs-lisp :tangle ../elisp/80-keybinds.el
 
 * Keybinding Configuration
 This module centralizes all global keybindings using `general.el`. It declares a `SPC` leader key and organizes commands by category for clarity and modularity.
@@ -74,7 +76,7 @@ This module centralizes all global keybindings using `general.el`. It declares a
 
 * Tangle
 
-#+begin_src emacs-lisp :tangle ../tangled/40-keybindings.el :comments link
+#+begin_src emacs-lisp
 ;;; Tangle all Org files in literate/ directory
 
 (defun my/tangle-all-literate-config ()

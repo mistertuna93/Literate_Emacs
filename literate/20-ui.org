@@ -1,9 +1,9 @@
-#+TITLE: UI / Theme / Modeline
-#+DATE: 2025-05-28T00:00:00+01:00
-#+DRAFT: false
-#+PROPERTY: header-args:emacs-lisp :comments link :results none :tangle  
+#+OPTIONS: :toc 2
+#+DESCRIPTION: Configuration for Ui
+#+DATE: 2025-06-04 00:19:00
+#+AUTHOR: mistertuna93
+#+PROPERTY: header-args:emacs-lisp :tangle ../elisp/20-ui.el
 #+TAGS[]: emacs config ui
-#+ALIASES[]: /emacs-config/01-main/20-ui.html
 
 * Themes and Modeline
 
@@ -23,6 +23,9 @@
   :custom
   (doom-modeline-height 25))
 #+end_src
+
+#+RESULTS:
+| doom-modeline-mode | org-persist-load-all | x-wm-set-size-hint | tramp-register-archive-autoload-file-name-handler | magit-maybe-define-global-key-bindings | table--make-cell-map |
 
 * Golden Ratio
 
@@ -92,3 +95,6 @@
      (if (or (not alpha) (= (cdr alpha) 100))
          '(85 . 85) '(100 . 100)))))
 #+end_src
+
+#+RESULTS:
+: toggle-transparency

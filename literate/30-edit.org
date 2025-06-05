@@ -1,8 +1,11 @@
-#+TITLE: Editing Enhancements
-#+DATE: 2025-05-28
-#+PROPERTY: header-args:emacs-lisp :comments link :results none
+#+OPTIONS: :toc 2
+#+DESCRIPTION: Configuration for Edit
+#+DATE: 2025-06-04 00:19:20
+#+AUTHOR: mistertuna93
+#+TITLE: Edit
+#+PROPERTY: header-args:emacs-lisp :tangle ../elisp/30-editing.el
 #+TAGS[]: emacs config editing
-#+ALIASES[]: /emacs-config/03-editing.html
+#+ALIASES[]: /.emacs.default/03-editing.html
 
 * Smart Editing
 ** expand-region

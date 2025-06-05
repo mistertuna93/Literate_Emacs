@@ -1,8 +1,11 @@
-#+TITLE: Project and Version Control
-#+Date:<2025-05-29 Thu><2025-05-26 Mon>  
-#+PROPERTY: header-args:emacs-lisp :comments link :results none
+#+OPTIONS: :toc 2
+#+DESCRIPTION: Configuration for Project
+#+DATE: 2025-06-04 00:20:13
+#+AUTHOR: mistertuna93
+#+TITLE: Project
+#+PROPERTY: header-args:emacs-lisp :tangle ../elisp/50-project.el
 #+TAGS[]: emacs config
-#+ALIASES[]: /emacs-config/50-projects.html
+#+ALIASES[]: /.emacs.default/50-projects.html
 
 * Projectile
 #+begin_src emacs-lisp

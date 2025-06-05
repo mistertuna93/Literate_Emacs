@@ -1,0 +1,78 @@
+;; [[file:literate/01-main.org::*Bootstrap Package Manager][Bootstrap Package Manager:1]]
+;; Reset gc-cons-threshold after startup
+  (add-hook 'emacs-startup-hook
+            (lambda ()
+              (setq gc-cons-threshold 16777216))) ; 16mb
+
+  ;; Initialize straight.el
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+        (bootstrap-version 6))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+          (url-retrieve-synchronously
+           "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+           'silent 'inhibit-cookies)
+        (goto-char (point-max))
+        (eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
+
+  ;; Configure use-package integration
+  (straight-use-package 'use-package)
+  (setq straight-use-package-by-default t)
+
+  ;;  Set up the configuration path
+  ;; (defvar mistertuna-config--config-path
+  ;;   (expand-file-name "~/Documents/.emacs.default/literate/"))
+
+  ;; Update the config path to use .emacs.default
+(defvar mistertuna-config--config-path
+  (expand-file-name "~/Documetns/.emacs.default/"))
+
+;; Ensure the elisp directory is at the root of .emacs.default
+(defvar mistertuna-config--elisp-path
+  (expand-file-name "elisp" mistertuna-config--config-path))
+
+
+  ;; Set up custom file location
+  (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+  (when (file-exists-p custom-file)
+    (load custom-file 'noerror 'nomessage))
+
+  ;; Ensure environment variables are properly set
+  (straight-use-package 'exec-path-from-shell)
+  (when (or (memq window-system '(mac ns x))
+            (daemonp))
+    (exec-path-from-shell-initialize))
+
+  ;; Set up some basic defaults
+  (setq-default
+   inhibit-startup-message t     ; Don't show the startup message
+   inhibit-startup-screen t      ; Don't show the startup screen
+   initial-scratch-message nil   ; Empty scratch buffer
+   sentence-end-double-space nil ; Single space after sentences
+   fill-column 80               ; Set width for automatic line breaks
+   help-window-select t         ; Focus new help windows when opened
+   indent-tabs-mode nil        ; Spaces instead of tabs
+   tab-width 4                 ; Width for tabs
+   uniquify-buffer-name-style 'forward ; Unique buffer names
+   window-combination-resize t ; Resize windows proportionally
+   x-stretch-cursor t)        ; Stretch cursor to the glyph width
+
+  ;; Disable backup files
+  (setq make-backup-files nil
+        auto-save-default nil
+        create-lockfiles nil)
+
+  ;; Better scrolling
+  (setq scroll-margin 0
+        scroll-conservatively 100000
+        scroll-preserve-screen-position 1)
+
+  ;; Enable y/n answers
+  (fset 'yes-or-no-p 'y-or-n-p)
+
+  ;; Enable recursive minibuffers
+  (setq enable-recursive-minibuffers t)
+;; Bootstrap Package Manager:1 ends here
