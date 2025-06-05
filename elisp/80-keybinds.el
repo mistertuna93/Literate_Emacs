@@ -1,0 +1,104 @@
+(use-package general
+  :ensure t
+  :config
+  (general-create-definer my/leader-key
+    :keymaps '(normal insert visual emacs)
+    :prefix "SPC"
+    :global-prefix "C-SPC"))
+
+(my/leader-key
+  "SPC" '(execute-extended-command :which-key "M-x"))
+
+(my/leader-key
+  "b"  '(:ignore t :which-key "buffers")
+  "bb" '(switch-to-buffer :which-key "switch")
+  "bd" '(kill-this-buffer :which-key "kill")
+  "bn" '(next-buffer :which-key "next")
+  "bp" '(previous-buffer :which-key "prev")
+  "bs" '(ibuffer :which-key "ibuffer")
+
+  "w"  '(:ignore t :which-key "windows")
+  "ws" '(split-window-below :which-key "split below")
+  "wv" '(split-window-right :which-key "split right")
+  "wd" '(delete-window :which-key "delete")
+  "wo" '(delete-other-windows :which-key "only")
+  "ww" '(other-window :which-key "other"))
+
+(my/leader-key
+  "f"  '(:ignore t :which-key "files")
+  "ff" '(find-file :which-key "find file")
+  "fs" '(save-buffer :which-key "save")
+
+  "p"  '(:ignore t :which-key "project")
+  "pp" '(project-switch-project :which-key "switch project")
+  "pf" '(project-find-file :which-key "find file in project")
+  "pb" '(project-switch-to-buffer :which-key "project buffer")
+  "pg" '(project-find-regexp :which-key "grep"))
+
+(my/leader-key
+  "o"  '(:ignore t :which-key "org/tools")
+  "oa" '(:ignore t :which-key "agenda/ai")
+  "oaA" '(org-agenda :which-key "agenda")
+  "oac" '(org-capture :which-key "capture")
+  "oar" '(org-roam-node-find :which-key "roam node")
+  "oai" '(org-ai-mode :which-key "Org-AI")
+  "oap" '(org-protocol-capture-html :which-key "capture html")
+
+  "or"  '(:ignore t :which-key "roam")
+  "orr" '(org-roam-buffer-toggle :which-key "toggle roam buffer")
+  "org" '(org-mode :which-key "org mode"))
+
+;;; Tangle all Org files in literate/ directory
+
+(defun my/tangle-all-literate-config ()
+"Tangle all Org files in the literate/ folder using their individual tangle settings."
+(interactive)
+(let ((org-confirm-babel-evaluate nil)) ;; Skip tangle prompts
+(dolist (file (directory-files (expand-file-name "literate" user-emacs-directory) t "\.org$"))
+(org-babel-tangle-file file))))
+
+;; Bind under: SPC e t (Export → Tangle)
+(general-define-key
+:states '(normal visual)
+:prefix "SPC e"
+"t" #'my/tangle-all-literate-config)
+
+(my/leader-key
+  "od"  '(:ignore t :which-key "DevOps")
+  "odd" '(docker :which-key "Docker")
+  "odf" '(dockerfile-mode :which-key "Dockerfile mode")
+  "odk" '(kubel :which-key "Kubernetes")
+
+  "ot"  '(:ignore t :which-key "Terminals")
+  "otv" '(vterm :which-key "vterm")
+  "otm" '(multi-vterm :which-key "multi-vterm")
+  "ots" '(shell-pop :which-key "shell-pop")
+  "otc" '(compile :which-key "compile")
+
+  "oa"  '(:ignore t :which-key "AI")
+  "oag" '(gptel :which-key "GPTel")
+  "oaa" '(aider :which-key "Aider AI Assistant")
+
+  "of"  '(:ignore t :which-key "Fun")
+  "off" '(fireplace :which-key "Fireplace")
+  "ofn" '(nyan-mode :which-key "Nyan mode")
+  "ofp" '(pacmacs :which-key "Pacmacs")
+  "ofg" '(gnugo :which-key "Play Go"))
+
+(my/leader-key
+  "l"  '(:ignore t :which-key "language/tools")
+  "lf" '(eglot-format :which-key "format buffer")
+  "lr" '(eglot-rename :which-key "rename")
+  "lh" '(eldoc :which-key "hover info")
+  "lj" '(flycheck-next-error :which-key "next error")
+  "lk" '(flycheck-previous-error :which-key "prev error")
+  "ld" '(xref-find-definitions :which-key "go to def"))
+
+(my/leader-key
+  "t" '(:ignore t :which-key "toggles")
+  "tt" '(visual-line-mode :which-key "visual line")
+  "tn" '(display-line-numbers-mode :which-key "line numbers")
+  "tw" '(whitespace-mode :which-key "whitespace"))
+
+(global-set-key (kbd "C-x k") #'kill-current-buffer)
+(global-set-key (kbd "M-/") #'hippie-expand)

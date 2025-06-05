@@ -1,0 +1,487 @@
+(use-package projectile
+  :straight t
+  :diminish projectile-mode
+  :custom
+  ;; Basic Configuration
+  (projectile-completion-system 'default)
+  (projectile-enable-caching t)
+  (projectile-project-search-path '("~/Projects" "~/Work"))
+  (projectile-sort-order 'recently-active)
+  (projectile-current-project-on-switch 'keep)
+  (projectile-auto-discover nil)
+  
+  ;; File Management
+  (projectile-globally-ignored-files
+   '(".DS_Store" "*.elc" "*.pyc" "*.class" "*.jar"
+     "*.gz" "*.zip" "*.tar" "*.tgz" "*.min.js"))
+  (projectile-globally-ignored-directories
+   '(".git" ".hg" ".svn" ".tox" ".venv" "node_modules"
+     "build" "dist" ".cache" ".pytest_cache" "__pycache__"))
+  (projectile-globally-ignored-file-suffixes
+   '(".elc" ".pyc" ".o" ".class" ".cache"))
+  
+  ;; Project Detection
+  (projectile-project-root-files
+   '(".git" ".hg" ".svn" ".projectile" "package.json" "Cargo.toml"))
+  (projectile-project-root-files-bottom-up
+   '(".projectile" ".git" ".hg" ".svn"))
+  (projectile-project-root-files-top-down-recurring
+   '("Makefile" "package.json" "setup.py"))
+  
+  ;; Compilation
+  (projectile-compilation-command-map
+   '((make . "make")
+     (npm . "npm run")
+     (cargo . "cargo")
+     (go . "go build")))
+  (projectile-compile-use-comint-mode t)
+  
+  ;; Performance
+  (projectile-file-exists-local-cache-expire 300)
+  (projectile-require-project-root t)
+  (projectile-indexing-method 'hybrid)
+  
+  ;; Display
+  (projectile-mode-line-prefix " 🏗")
+  (projectile-dynamic-mode-line t)
+  :config
+  (projectile-mode +1))
+
+(use-package treemacs
+  :straight t
+  :defer t
+  :custom
+  ;; Basic Configuration
+  (treemacs-follow-mode t)
+  (treemacs-filewatch-mode t)
+  (treemacs-fringe-indicator-mode 'always)
+  (treemacs-git-mode 'deferred)
+  
+  ;; Display
+  (treemacs-width 35)
+  (treemacs-indentation 2)
+  (treemacs-is-never-other-window nil)
+  (treemacs-sorting 'alphabetic-asc)
+  (treemacs-show-hidden-files t)
+  (treemacs-silent-refresh t)
+  (treemacs-silent-filewatch t)
+  
+  ;; Performance
+  (treemacs-file-event-delay 1000)
+  (treemacs-file-follow-delay 0.2)
+  (treemacs-project-follow-cleanup t)
+  
+  ;; Git Integration
+  (treemacs-git-integration t)
+  (treemacs-max-git-entries 5000)
+  (treemacs-collapse-dirs 3)
+  
+  ;; File Ignores
+  (treemacs-ignored-file-predicates
+   '((lambda (file _) (string-match-p "\\.git$" file))
+     (lambda (file _) (string-match-p "\\.cache$" file))
+     (lambda (file _) (string-match-p "__pycache__$" file))))
+  
+  :config
+  (treemacs-resize-icons 16))
+
+(use-package treemacs-projectile
+  :straight t
+  :after (treemacs projectile))
+
+(use-package treemacs-magit
+  :straight t
+  :after (treemacs magit))
+
+(use-package ibuffer
+  :straight (:type built-in)
+  :custom
+  ;; Display Settings
+  (ibuffer-show-empty-filter-groups nil)
+  (ibuffer-movement-cycle nil)
+  (ibuffer-default-sorting-mode 'filename/process)
+  (ibuffer-use-header-line t)
+  (ibuffer-default-shrink-to-minimum-size nil)
+  (ibuffer-formats
+   '((mark modified read-only locked
+           " " (name 30 30 :left :elide)
+           " " (size 9 -1 :right)
+           " " (mode 16 16 :left :elide)
+           " " filename-and-process)
+     (mark " " (name 16 -1) " " filename)))
+  
+  ;; Filter Groups
+  (ibuffer-saved-filter-groups
+   '(("default"
+      ("Org" (mode . org-mode))
+      ("Dired" (mode . dired-mode))
+      ("Programming" (or
+                     (mode . python-mode)
+                     (mode . emacs-lisp-mode)
+                     (mode . rust-mode)
+                     (mode . go-mode)
+                     (mode . web-mode)
+                     (mode . js2-mode)
+                     (mode . typescript-mode)))
+      ("Documentation" (or
+                       (mode . markdown-mode)
+                       (mode . rst-mode)
+                       (mode . help-mode)
+                       (mode . Info-mode)))
+      ("Configuration" (or
+                       (name . "^\\*Customize")
+                       (name . "^\\*Help")
+                       (name . "\\.emacs\\.d")))
+      ("Version Control" (or
+                         (name . "^magit")
+                         (mode . git-commit-mode)
+                         (mode . git-rebase-mode)))
+      ("Terminal" (or
+                  (mode . vterm-mode)
+                  (mode . term-mode)
+                  (mode . shell-mode)
+                  (mode . eshell-mode)))
+      ("Special" (name . "^\\*.*\\*$")))))
+  
+  ;; Expert Mode Settings
+  (ibuffer-expert t)
+  (ibuffer-display-summary t)
+  (ibuffer-confirm-operation-on-buffers-without-visiting-file nil)
+  :hook
+  (ibuffer-mode . (lambda ()
+                    (ibuffer-switch-to-saved-filter-groups "default")
+                    (ibuffer-auto-mode 1))))
+
+;; Enhanced IBuffer
+(use-package ibuffer-projectile
+  :straight t
+  :after ibuffer
+  :hook (ibuffer . ibuffer-projectile-set-filter-groups))
+
+(use-package ibuffer-vc
+  :straight t
+  :after ibuffer
+  :hook (ibuffer . ibuffer-vc-set-filter-groups-by-vc-root))
+
+(use-package find-file-in-project
+  :straight t
+  :custom
+  (ffip-use-rust-fd t)
+  (ffip-project-file '(".git" ".hg" ".svn" ".project"))
+  (ffip-ignore-filenames 
+   '("*.elc" "*.pyc" "*.o" "*.obj" "*.class"
+     "*.min.js" "*.min.css" "*.map"))
+  (ffip-patterns 
+   '("*.html" "*.org" "*.md" "*.el" "*.clj" "*.py" "*.rb" "*.js" "*.pl"))
+  (ffip-prune-patterns 
+   '(".git" ".svn" ".hg" ".deps" "build" "dist" "node_modules"))
+  (ffip-match-path-instead-of-filename nil)
+  (ffip-project-root nil)
+  :config
+  (add-to-list 'ffip-ignore-filenames "*.elc")
+  (add-to-list 'ffip-ignore-filenames "*.pyc"))
+
+(use-package consult
+  :straight t
+  :custom
+  (consult-preview-key 'any)
+  (consult-project-root-function #'projectile-project-root)
+  (consult-find-command "fd --color=never --full-path ARG OPTS")
+  (consult-ripgrep-command "rg --null --line-buffered --color=ansi --max-columns=1000 --no-heading --line-number . -e ARG OPTS")
+  :config
+  (consult-customize
+   consult-theme :preview-key '(:debounce 0.2 any)
+   consult-ripgrep consult-git-grep consult-grep
+   consult-bookmark consult-recent-file consult-xref
+   :preview-key '(:debounce 0.4 any)))
+
+(use-package dired
+  :straight (:type built-in)
+  :custom
+  ;; Basic Settings
+  (dired-recursive-copies 'always)
+  (dired-recursive-deletes 'always)
+  (dired-dwim-target t)
+  (delete-by-moving-to-trash t)
+  (dired-listing-switches "-alh")
+  
+  ;; File Operations
+  (dired-compress-files-alist
+   '(("\\.tar\\.gz\\'" . "tar -zcf %o %i")
+     ("\\.zip\\'" . "zip %o -r --filesync %i")))
+  (dired-guess-shell-alist-user
+   '(("\\.pdf\\'" "evince")
+     ("\\.docx?\\'" "libreoffice")
+     ("\\.xlsx?\\'" "libreoffice")))
+  
+  ;; Display
+  (dired-hide-details-hide-symlink-targets nil)
+  (dired-hide-details-hide-information-lines t)
+  (dired-clean-confirm-killing-deleted-buffers t)
+  
+  :hook
+  (dired-mode . dired-hide-details-mode)
+  (dired-mode . auto-revert-mode)
+  :config
+  (put 'dired-find-alternate-file 'disabled nil))
+
+;; Enhanced Dired Features
+(use-package dired-single
+  :straight t
+  :after dired)
+
+(use-package dired-ranger
+  :straight t
+  :after dired)
+
+(use-package diredfl
+  :straight t
+  :hook (dired-mode . diredfl-mode))
+
+(use-package all-the-icons-dired
+  :straight t
+  :if (display-graphic-p)
+  :hook (dired-mode . all-the-icons-dired-mode))
+
+(use-package dired-git-info
+  :straight t
+  :after dired
+  :custom
+  (dgi-auto-hide-details-p nil)
+  :hook (dired-mode . dired-git-info-mode))
+
+(use-package ace-window
+  :straight t
+  :custom
+  (aw-scope 'frame)
+  (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+  (aw-minibuffer-flag t)
+  (aw-dispatch-always t)
+  (aw-background t)
+  (aw-ignore-current nil)
+  (aw-dispatch-alist
+   '((?x aw-delete-window "Delete Window")
+     (?m aw-swap-window "Swap Windows")
+     (?M aw-move-window "Move Window")
+     (?c aw-copy-window "Copy Window")
+     (?j aw-switch-buffer-in-window "Select Buffer")
+     (?n aw-flip-window "Flip Window")
+     (?u aw-switch-buffer-other-window "Switch Buffer Other Window")
+     (?e aw-execute-command-other-window "Execute Command Other Window")
+     (?F aw-split-window-fair "Split Fair Window")
+     (?v aw-split-window-vert "Split Vert Window")
+     (?b aw-split-window-horz "Split Horz Window")
+     (?o delete-other-windows "Delete Other Windows")
+     (?? aw-show-dispatch-help "Help"))))
+
+;; Window Undo/Redo
+(use-package winner
+  :straight (:type built-in)
+  :custom
+  (winner-dont-bind-my-keys t)
+  (winner-boring-buffers '("*Completions*"
+                          "*Compile-Log*"
+                          "*inferior-lisp*"
+                          "*Fuzzy Completions*"
+                          "*Apropos*"
+                          "*Help*"
+                          "*cvs*"
+                          "*Buffer List*"
+                          "*Ibuffer*"))
+  :config
+  (winner-mode 1))
+
+;; Window Purpose
+(use-package window-purpose
+  :straight t
+  :custom
+  (purpose-default-layout-file
+   (expand-file-name ".purpose-layout" user-emacs-directory))
+  (purpose-layout-dirs
+   (list (expand-file-name ".purpose-layouts" user-emacs-directory)))
+  :config
+  (purpose-mode 1))
+
+(use-package bookmark
+  :straight (:type built-in)
+  :custom
+  (bookmark-default-file 
+   (expand-file-name "bookmarks" user-emacs-directory))
+  (bookmark-save-flag 1)
+  (bookmark-version-control t)
+  (bookmark-sort-flag nil)
+  (bookmark-use-annotations nil))
+
+;; Window/Buffer Layout Bookmarks
+(use-package burly
+  :straight t
+  :custom
+  (burly-bookmark-prefix "β:")
+  (burly-tabs-mode t)
+  (burly-frameset-filter-alist
+   '((height . nil)
+     (width . nil)
+     (window-state . nil)))
+  :config
+  (burly-tabs-mode 1))
+
+;; Visual Bookmarks
+(use-package bm
+  :straight t
+  :custom
+  (bm-buffer-persistence t)
+  (bm-restore-repository-on-load t)
+  (bm-cycle-all-buffers t)
+  (bm-highlight-style 'bm-highlight-only-line)
+  (bm-repository-file 
+   (expand-file-name "bm-repository" user-emacs-directory)))
+
+(use-package dumb-jump
+  :straight t
+  :custom
+  (dumb-jump-selector 'completing-read)
+  (dumb-jump-prefer-searcher 'rg)
+  (dumb-jump-aggressive nil)
+  (dumb-jump-force-searcher nil)
+  (dumb-jump-max-find-time 10)
+  :config
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
+
+(use-package avy
+  :straight t
+  :custom
+  (avy-background t)
+  (avy-all-windows nil)
+  (avy-style 'at-full)
+  (avy-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+  (avy-timeout-seconds 0.5)
+  (avy-case-fold-search t))
+
+(use-package deadgrep
+  :straight t
+  :custom
+  (deadgrep-project-root-function #'projectile-project-root)
+  (deadgrep--search-type 'regexp)
+  (deadgrep-max-line-length 300))
+
+(use-package imenu-list
+  :straight t
+  :custom
+  (imenu-list-size 0.2)
+  (imenu-list-position 'right)
+  (imenu-list-auto-resize t))
+
+(use-package minimap
+  :straight t
+  :custom
+  (minimap-window-location 'right)
+  (minimap-width-fraction 0.15)
+  (minimap-minimum-width 20)
+  (minimap-hide-scroll-bar t))
+
+(use-package bufler
+  :straight t
+  :custom
+  (bufler-reverse nil)
+  (bufler-face-prefix "bufler-")
+  (bufler-column-name-width 40)
+  (bufler-groups
+   (bufler-defgroups
+     (group
+      (group-or "Emacs" (name-match "\\*.*\\*"))
+      (group-or "Code"
+                (mode-match "prog-mode")
+                (mode-match "conf-mode"))
+      (group-or "Documents"
+                (mode-match "text-mode")
+                (mode-match "org-mode"))
+      (group-or "Version Control"
+                (mode-match "magit-mode")
+                (mode-match "vc-mode"))))))
+
+;; Vertico: Vertical completion UI
+(use-package vertico
+  :init
+  (vertico-mode))
+
+;; Save history and persist completion state
+(use-package savehist
+  :init
+  (savehist-mode))
+
+;; Marginalia: Rich annotations in minibuffer
+(use-package marginalia
+  :after vertico
+  :init
+  (marginalia-mode))
+
+;; Orderless: Flexible matching style
+(use-package orderless
+  :init
+  (setq completion-styles '(orderless basic)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles partial-completion)))))
+
+;; Embark: Contextual actions for minibuffer selections
+(use-package embark
+  :bind
+  (("C-." . embark-act)
+   ("C-;" . embark-dwim))
+  :init
+  (setq prefix-help-command #'embark-prefix-help-command))
+
+;; Consult: Various enhanced commands for completion
+(use-package consult
+  :bind (("C-s" . consult-line)
+         ("M-y" . consult-yank-pop)
+         ("C-x b" . consult-buffer)
+         ("C-x C-r" . consult-recent-file)))
+
+(use-package treemacs
+  :defer t
+  :init
+  (with-eval-after-load 'winum
+    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+  :config
+  (setq treemacs-no-png-images nil
+        treemacs-workspace-switch-cleanup nil)
+  (treemacs-follow-mode t)
+  (treemacs-filewatch-mode t)
+  (treemacs-fringe-indicator-mode t)
+  (treemacs-indentation 1)
+  (treemacs-resize-icons 16)
+  (treemacs-collapse-dirs 3)
+  :bind
+  (:map global-map
+        ("M-0"       . treemacs-select-window)
+        ("C-x t 1"   . treemacs-delete-other-windows)
+        ("C-x t t"   . treemacs)
+        ("C-x t d"   . treemacs-select-directory)))
+
+(use-package which-key
+  :defer 1
+  :config
+  (which-key-mode))
+
+(use-package avy
+  :bind
+  ("C-:" . avy-goto-char)
+  ("C-'" . avy-goto-char-2)
+  ("M-g f" . avy-goto-line)
+  ("M-g w" . avy-goto-word-1))
+
+(use-package ace-window
+  :bind ("M-o" . ace-window)
+  :config
+  (setq aw-scope 'global))
+
+(use-package helpful
+  :commands (helpful-callable helpful-variable helpful-command helpful-key)
+  :bind
+  ([remap describe-function] . helpful-callable)
+  ([remap describe-variable] . helpful-variable)
+  ([remap describe-command]  . helpful-command)
+  ([remap describe-key]      . helpful-key))
+
+;; Enable window navigation with Shift+arrow keys
+(windmove-default-keybindings)
